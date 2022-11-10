@@ -3,6 +3,8 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, map, Observable, throwError } from 'rxjs';
 
+import { JwtHelperService } from '@auth0/angular-jwt';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -32,5 +34,14 @@ export class AuthService {
   public logout() {
     localStorage.removeItem('accessToken');
     return this.router.navigate(['']);
+  }
+
+  public isAuthenticated() {
+    const token = localStorage.getItem('accessToken');
+
+    if (!token) return false;
+
+    const jwtHelper = new JwtHelperService();
+    return !jwtHelper.isTokenExpired(token);
   }
 }
