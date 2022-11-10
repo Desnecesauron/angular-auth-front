@@ -17,7 +17,11 @@ export class AuthService {
       }),
       catchError((err) => {
         // console.log(err);
-        return throwError(() => err.error.message);
+        if (err.error.message) return throwError(() => err.error.message);
+        return throwError(
+          () =>
+            'No momento não estamos conseguindo validar estes dados, tente novamente mais tarde!'
+        );
       })
     );
   }
