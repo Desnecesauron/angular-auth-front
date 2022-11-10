@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { catchError, map, Observable, throwError } from 'rxjs';
 
 @Injectable({
@@ -8,12 +9,14 @@ import { catchError, map, Observable, throwError } from 'rxjs';
 export class AuthService {
   private url: string = 'http://localhost:3000';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router: Router) {}
 
   public sign(payLoad: { email: string; password: string }): Observable<any> {
-    return this.http.post(`${this.url}/sign`, payLoad).pipe(
+    return this.http.post<{ token: string }>(`${this.url}/sign`, payLoad).pipe(
       map((data) => {
-        return console.log(data);
+        localStorage.removeItem('accessToken');
+        localStorage.setItem('accessToken', JSON.stringify(data.token));
+        return this.router.navigate(['admin']);
       }),
       catchError((err) => {
         // console.log(err);
@@ -24,5 +27,10 @@ export class AuthService {
         );
       })
     );
+  }
+
+  public logout() {
+    localStorage.removeItem('accessToken');
+    return this.router.navigate(['']);
   }
 }
